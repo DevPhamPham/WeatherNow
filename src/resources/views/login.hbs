@@ -1,0 +1,70 @@
+<div class="container">
+  <div class="row justify-content-center align-items-center vh-100">
+    <div class="col-md-4 col-sm-8">
+      <h1 class="text-center mb-4">Đăng nhập</h1>
+      <h2 class="text-center mb-4">Weather Now</h2>
+      
+      {{#if success}}
+      <div class="alert alert-success" role="alert">
+        {{success}}
+        <p>Vui lòng đăng nhập lại</p>
+      </div>
+      {{/if}}
+
+      {{#if error}}
+      <div class="alert alert-danger" role="alert">
+        {{error}}
+      </div>
+      {{/if}}
+
+      <form action="/auth/login" method="POST" id="user">
+        <div class="form-floating mb-3">
+          <input class="form-control" type="email" id="email" name="email" placeholder=" " required>
+          <label for="email">Email:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input class="form-control" type="password" id="password" name="password" placeholder=" " required>
+          <label for="password">Mật khẩu:</label>
+        </div>
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary btn-lg mb-3">Đăng nhập</button>
+        </div>
+      </form>
+
+      <div class="text-center">
+        <a href="/auth/register" class="text-decoration-none">Chưa có tài khoản? Đăng ký ngay!</a>
+      </div>
+
+      <div class="btn-toolbar justify-content-center mt-3" role="toolbar">
+        <!-- Nút đăng nhập bằng Google -->
+        <a href="/auth/google"><button class="btn btn-outline-warning">Đăng nhập bằng Google</button></a>
+      </div>
+      <div class="btn-toolbar justify-content-center mt-3" role="toolbar">
+                <!-- Nút đăng nhập bằng Facebook -->
+        <a href="/auth/facebook"><button class="btn btn-outline-secondary">Đăng nhập bằng Facebook</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+  $(function() {
+    $("form#user").submit(function(event) {
+      event.preventDefault();
+      $.ajax({
+        url: "/auth/login",
+        method: "POST",
+        data: $(this).serialize(),
+        success: function(response) {
+          if (response.success) {
+            $("#success-alert").text(response.success).show();
+            $("#error-alert").hide();
+          } else if (response.error) {
+            $("#error-alert").text(response.error).show();
+            $("#success-alert").hide();
+          }
+        }
+      });
+    });
+  });
+</script>

@@ -1,0 +1,80 @@
+<div class="container">
+  <div class="row justify-content-center align-items-center vh-100">
+    <div class="col-md-6 col-sm-8">
+      <h1 class="text-center mb-4">Đăng ký</h1>
+      <h2 class="text-center mb-4">Weather Now</h2>
+
+      {{#if success}}
+      <div class="alert alert-success" role="alert">
+        {{success}}
+        <p>Vui lòng đăng nhập lại</p>
+      </div>
+      {{/if}}
+
+      {{#if error}}
+      <div class="alert alert-danger" role="alert">
+        {{error}}
+      </div>
+      {{/if}}
+
+      <form method="POST" action="/auth/register" id="user">
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+          <label for="email">Email address</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+          <label for="password">Password</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+          <label for="name">Name</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select class="form-select" id="gender" name="gender" aria-label="Select gender">
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          <label for="gender">Gender</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="date" class="form-control" id="birthday" name="birthday" placeholder="Birthday">
+          <label for="birthday">Birthday</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="tel" class="form-control" id="sdt" name="sdt" placeholder="Phone number">
+          <label for="sdt">Phone number</label>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+
+      <p class="text-center mt-4">Already have an account? <a href="login">Sign In</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function() {
+    $("form#user").submit(function(event) {
+      event.preventDefault();
+      $.ajax({
+        url: "/auth/register",
+        method: "POST",
+        data: $(this).serialize(),
+        success: function(response) {
+          if (response.success) {
+            $("#success-alert").text(response.success).show();
+            $("#error-alert").hide();
+          } else if (response.error) {
+            $("#error-alert").text(response.error).show();
+            $("#success-alert").hide();
+          }
+        }
+      });
+    });
+  });
+</script>

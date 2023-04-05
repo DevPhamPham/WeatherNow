@@ -1,0 +1,83 @@
+<div class="container">
+  <h1 class="text-center mb-5">What's the weather like?</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form>
+        <div class="input-group mb-3">
+          <input type="text" name="city" class="form-control" placeholder="Enter a city name">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Get Weather</button>
+          </div>
+        </div>
+        <div style="max-height: 500px; overflow: scroll;" class="autocomplete-items dropdown-menu" aria-labelledby="dropdownMenuButton">
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="weather"></div>
+      <div class="error"></div>
+    </div>
+  </div>
+  <div class="row justify-content-end mb-3">
+    <div class="col-md-3">
+      <a href="/auth/logout" class="btn btn-danger">Logout</a>
+    </div>
+  </div>
+</div>
+
+    <script>
+      const form = document.querySelector('form');
+      const error = document.querySelector('.error');
+      const weather = document.querySelector('.weather');
+      const input = document.querySelector('input[name="city"]');
+      const dropdownMenu = document.querySelector('.dropdown-menu');
+      
+      input.addEventListener('input', () => {
+        const cityName = input.value.trim().toLowerCase();
+        fetch(`/api/cities?name=${cityName}`)
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Không thể tải dữ liệu thành phố');
+          })
+          .then(cities => {
+            const html = cities.map(city => `<a class="dropdown-item" href="#">${city.name}</a>`).join('');
+            dropdownMenu.innerHTML = html;
+            dropdownMenu.classList.add('show');
+          })
+          .catch(error => console.error(error));
+      });
+      dropdownMenu.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+          input.value = e.target.textContent;
+          dropdownMenu.classList.remove('show');
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const cityName = input.value.trim();
+        const response = await fetch(`/api/weather?city=${cityName}`);
+        const data = await response.json();
+        if (data.error) {
+          error.textContent = data.error;
+          weather.textContent = '';
+        } else {
+          error.textContent = '';
+          weather.innerHTML = `
+            <div class="card">
+              <div class="card-body">
+                <h2 class="card-title">${data.city}</h2>
+                <p class="card-text">${data.description}</p>
+                <p class="card-text">Temperature: ${data.temperature} &#8451;</p>
+                <p class="card-text">Humidity: ${data.humidity}%</p>
+                <p class="card-text">Wind speed: ${data.windSpeed} m/s</p>
+              </div>
+            </div>
+          `;
+        }
+      });
+    </script>
